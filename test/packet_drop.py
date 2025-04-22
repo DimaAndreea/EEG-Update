@@ -37,7 +37,7 @@ def main():
             d = headset.get_sample()
             ctr = headset.counter
             if (prev_ctr + 1) % 129 != ctr:
-                print "Dropped packets between %d and %d" % (prev_ctr, ctr)
+                print(("Dropped packets between %d and %d" % (prev_ctr, ctr)))
             prev_ctr = ctr
     except:
         headset.disconnect()

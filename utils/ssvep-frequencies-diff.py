@@ -16,8 +16,8 @@ if __name__ == '__main__':
         ch2 = sys.argv[3]
         resting_sig = loadmat(os.path.join(folder, "eeg-resting"))
         ssvep_sig = loadmat(os.path.join(folder, "eeg-ssvep"))
-    except IndexError, ie:
-        print "Usage: %s <data-folder> <channel1> <channel2>" % sys.argv[0]
+    except IndexError as ie:
+        print(("Usage: %s <data-folder> <channel1> <channel2>" % sys.argv[0]))
 
     else:
         fs = 128.0

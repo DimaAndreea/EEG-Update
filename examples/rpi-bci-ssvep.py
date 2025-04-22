@@ -78,7 +78,7 @@ def main():
                 PIN_RIGHT_ARM   :   15,
               }
 
-    experiment = {"SSVEP":      stimuli.values(),
+    experiment = {"SSVEP":      list(stimuli.values()),
                   "Duration":   duration,
                   "LED":        "Green",
                   "Subject":    "OC",
@@ -87,7 +87,7 @@ def main():
                  }
 
     # Spawn processes
-    for pin, frequency in stimuli.items():
+    for pin, frequency in list(stimuli.items()):
         if frequency > 0:
             process = Process(target=blinkLed, args=(pin, frequency))
             process.daemon = True
@@ -112,7 +112,7 @@ def main():
         headset.disconnect()
         GPIO.cleanup()
     except e:
-        print e
+        print(e)
 
     # Finally, save the data as matlab files
     headset.save_as_matlab(eeg_ssvep, "eeg-ssvep", experiment)

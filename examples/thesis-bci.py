@@ -62,7 +62,7 @@ def classifier(conn):
     freq_right= int(experiment['freq_right'])
 
     # List for scores
-    LEFT, RIGHT = range(2)
+    LEFT, RIGHT = list(range(2))
 
     if psd_step == 1:
         # Scoring is at the fundamental frequencies
@@ -71,10 +71,10 @@ def classifier(conn):
     else:
         # Scoring is the average of the 3 neighbours centered
         # at the fundamental frequency, e.g. 16.5, 17, 17.5 for 17Hz for psd_step = 0.5
-        left_score  = range(int((freq_left  / psd_step)) - 1, int((freq_left  / psd_step)) + 2)
-        right_score = range(int((freq_right / psd_step)) - 1, int((freq_right / psd_step)) + 2)
+        left_score  = list(range(int((freq_left  / psd_step)) - 1, int((freq_left  / psd_step)) + 2))
+        right_score = list(range(int((freq_right / psd_step)) - 1, int((freq_right / psd_step)) + 2))
 
-    print "Frequency points\nleft: %s:%s\nright: %s:%s" % (left_score, freqs[left_score], right_score, freqs[right_score])
+    print(("Frequency points\nleft: %s:%s\nright: %s:%s" % (left_score, freqs[left_score], right_score, freqs[right_score])))
 
     while 1:
         its = 0
@@ -139,15 +139,15 @@ def main(argv):
         freq_right = argv[2]
         n_runs = int(argv[3])
     except:
-        print "Usage: %s <frequency left> <frequency right> <n_runs>" % argv[0]
+        print(("Usage: %s <frequency left> <frequency right> <n_runs>" % argv[0]))
         sys.exit(1)
 
     # Spawn SSVEP daemon
     ssvepd = None
     try:
         ssvepd = subprocess.Popen(["./bbb-bci-ssvepd.py", freq_left, freq_right])
-    except OSError, e:
-        print "Error: Can't launch SSVEP daemon: %s" % e
+    except OSError as e:
+        print(("Error: Can't launch SSVEP daemon: %s" % e))
         sys.exit(2)
 
     # Setup headset
@@ -210,7 +210,7 @@ def main(argv):
             while espeak.is_playing():
                 time.sleep(0.1)
         else:
-            print result["winner"]
+            print((result["winner"]))
 
     # Cleanup
     try:
@@ -220,7 +220,7 @@ def main(argv):
         dspd.join(0)
         dspd.terminate()
     except e:
-        print e
+        print(e)
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

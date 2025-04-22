@@ -21,8 +21,8 @@ if __name__ == '__main__':
         folder = sys.argv[1]
         resting_sig = loadmat(os.path.join(folder, "eeg-resting"))
         ssvep_sig = loadmat(os.path.join(folder, "eeg-ssvep"))
-    except IndexError, ie:
-        print "Usage: %s <data-folder> [channel]" % sys.argv[0]
+    except IndexError as ie:
+        print(("Usage: %s <data-folder> [channel]" % sys.argv[0]))
 
     else:
         time_step = 1/128.0
@@ -34,9 +34,9 @@ if __name__ == '__main__':
         resting_drops = utils.check_packet_drops(resting_sig['SEQ'][0,:])
         ssvep_drops = utils.check_packet_drops(ssvep_sig['SEQ'][0,:])
         if ssvep_drops:
-            print "SSVEP drops: %s" % ssvep_drops
+            print(("SSVEP drops: %s" % ssvep_drops))
         if resting_drops:
-            print "Resting drops: %s" % resting_drops
+            print(("Resting drops: %s" % resting_drops))
 
         if ch:
             fig, axarr = plt.subplots(5, len(ch), sharex=False)
@@ -45,7 +45,7 @@ if __name__ == '__main__':
         else:
             # 3 for matlab meta data arrays, and 1 for SEQ
             fig, axarr = plt.subplots(5, len(ssvep_sig) - 4, sharex=False)
-            channels = [c for c in ssvep_sig.keys() if not c.startswith(("__", "SEQ"))]
+            channels = [c for c in list(ssvep_sig.keys()) if not c.startswith(("__", "SEQ"))]
 
         for index, channel in enumerate(channels):
             rest = signal.detrend(resting_sig[channel][0,:], type='constant')

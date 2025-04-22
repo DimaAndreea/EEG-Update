@@ -33,7 +33,7 @@ def main():
     try:
         duration = int(sys.argv[1])
     except:
-        print "Usage: %s <duration> [ch1,ch2,..,chN]" % sys.argv[0]
+        print(("Usage: %s <duration> [ch1,ch2,..,chN]" % sys.argv[0]))
         return 1
 
     channels = None
@@ -50,9 +50,9 @@ def main():
     # Acquire
     idx, data = headset.acquire_data_fast(duration)
 
-    print "Battery: %d %%" % headset.battery
-    print "Contact qualities"
-    print headset.quality
+    print(("Battery: %d %%" % headset.battery))
+    print("Contact qualities")
+    print((headset.quality))
 
     # Record
     utils.save_as_matlab(data, headset.channel_mask)
@@ -61,7 +61,7 @@ def main():
     try:
         headset.disconnect()
     except e:
-        print e
+        print(e)
 
 if __name__ == "__main__":
     sys.exit(main())

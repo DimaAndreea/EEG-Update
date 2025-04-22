@@ -38,10 +38,10 @@ from emotiv import epoc, utils
 
 
 def get_subject_information():
-    initials = raw_input("Initials: ")
-    age = raw_input("Age: ")
-    sex = raw_input("Sex (M)ale / (F)emale: ")
-    comment = raw_input("Experiment description: ")
+    initials = eval(input("Initials: "))
+    age = eval(input("Age: "))
+    sex = eval(input("Sex (M)ale / (F)emale: "))
+    comment = eval(input("Experiment description: "))
     return {
             "age"       :  age,
             "sex"       :  sex,
@@ -63,7 +63,7 @@ def save_as_dataset(rest_eegs, ssvep_eegs, experiment):
 
     for t in range(n_trials):
         trial[t] = ssvep_eegs[t][:, :].T
-        trial_time[t] = np.array(range(ssvep_eegs[t][:, 0].size)) / 128.0
+        trial_time[t] = np.array(list(range(ssvep_eegs[t][:, 0].size))) / 128.0
         if rest_eegs:
             rest[t] = rest_eegs[t][:, :].T
 
@@ -78,7 +78,7 @@ def save_as_dataset(rest_eegs, ssvep_eegs, experiment):
     matlab_data["data"] = fieldtrip_data
 
     # Inject metadata if any
-    for key, value in experiment.items():
+    for key, value in list(experiment.items()):
         matlab_data[key] = value
 
     # Put time of recording
@@ -129,7 +129,7 @@ def main(argv):
         duration = int(argv[3])
         n_trials = int(argv[4])
     except:
-        print "Usage: %s <frequency left> <frequency right> <trial_duration> <n_trials>" % argv[0]
+        print(("Usage: %s <frequency left> <frequency right> <trial_duration> <n_trials>" % argv[0]))
         sys.exit(1)
 
     # Spawn SSVEP and DSPD process
@@ -138,8 +138,8 @@ def main(argv):
     try:
         ssvepd = subprocess.Popen(["./bbb-bci-ssvepd.py", freq_left, freq_right])
         #dspd = subprocess.Popen(["./bbb-bci-dspd.py"])
-    except OSError, e:
-        print "Error: Can't launch SSVEP/DSP subprocesses: %s" % e
+    except OSError as e:
+        print(("Error: Can't launch SSVEP/DSP subprocesses: %s" % e))
         sys.exit(2)
 
     # Open socket to DSP process if any
@@ -215,18 +215,18 @@ def main(argv):
 
     # Cleanup
     try:
-        print "Disconnecting headset..."
+        print("Disconnecting headset...")
         headset.disconnect()
-        print "Terminating ssvepd..."
+        print("Terminating ssvepd...")
         ssvepd.terminate()
-        print "Waiting ssvepd termination..."
+        print("Waiting ssvepd termination...")
         ssvepd.wait()
         if dspd and sock_connected:
             sock.close()
             dspd.terminate()
             dspd.wait()
     except e:
-        print e
+        print(e)
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

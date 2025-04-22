@@ -36,9 +36,9 @@ except ImportError:
     from emotiv import epoc, utils
 
 def get_subject_information():
-    initials = raw_input("Initials: ")
-    age = raw_input("Age: ")
-    sex = raw_input("Sex (M)ale / (F)emale: ")
+    initials = eval(input("Initials: "))
+    age = eval(input("Age: "))
+    sex = eval(input("Sex (M)ale / (F)emale: "))
     return ",".join([initials[:2], age[:2], sex[0]])
 
 def main():
@@ -46,14 +46,14 @@ def main():
     try:
         ssvepd_pid = int(open(SSVEPD_PID, "r").read())
     except:
-        print "SSVEP service is not running."
+        print("SSVEP service is not running.")
         return 1
 
     try:
         sock = socket.socket(socket.AF_UNIX)
         sock.connect(DSPD_SOCK)
     except:
-        print "Can't connect to DSP block."
+        print("Can't connect to DSP block.")
         return 1
 
     # Setup headset
@@ -93,7 +93,7 @@ def main():
         headset.disconnect()
         sock.close()
     except e:
-        print e
+        print(e)
 
 if __name__ == "__main__":
     sys.exit(main())

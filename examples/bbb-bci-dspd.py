@@ -31,7 +31,7 @@ SOCKET = "/tmp/bbb-bci-dspd.sock"
 RECVSIZE = 4096 * 8
 
 def process_eeg(data):
-    print "Lost packets: ", utils.check_packet_drops(data[:, CTR])
+    print(("Lost packets: ", utils.check_packet_drops(data[:, CTR])))
 
     ch = signal.detrend(data[:, O2].T)
     time_step = 1/128.0
@@ -43,7 +43,7 @@ def process_eeg(data):
     power = np.abs(fft)[pidxs]
     max_power_ind = power.argmax()
     max_args = power.argsort()[::-1][:5]
-    print freqs[max_args], power[max_args]
+    print((freqs[max_args], power[max_args]))
     #print "Power\n-----------------------------\n"
     #print power
     #print "\n".join("%10s: \t%2.f" % (z[0],z[1]) for z in zip(freqs, power))
@@ -95,8 +95,8 @@ def main():
             #process_eeg(data[:(i+1)*128, :])
             process_eeg(d)
 
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         pass
     finally:
         # Pass the result back to acquisition daemon
@@ -104,7 +104,7 @@ def main():
         server.close()
         os.unlink(SOCKET)
         utils.save_as_matlab(data, channel_mask, metadata=metadata)
-        print "Total packet lost: %d/%d" % (len(utils.check_packet_drops(data[:, CTR])), data[:, CTR].size)
+        print(("Total packet lost: %d/%d" % (len(utils.check_packet_drops(data[:, CTR])), data[:, CTR].size)))
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -33,7 +33,7 @@ PID_FILE = "/var/run/bbb-bci-ssvepd.pid"
 LEDS = [["P8_9",  0, time.time(), 0, 0],
         ["P8_10", 0, time.time(), 0, 0],
        ]
-PIN, VALUE, TIMER, PERIOD, HZ = range(5)
+PIN, VALUE, TIMER, PERIOD, HZ = list(range(5))
 
 ENABLED = 0
 
@@ -97,7 +97,7 @@ def main(freqs):
                     GPIO.output(led[PIN], led[VALUE] ^ 1)
                     led[TIMER] = time.time()
                     led[VALUE] ^= 1
-    except KeyboardInterrupt, ke:
+    except KeyboardInterrupt as ke:
         return 2
     finally:
         cleanup()
@@ -105,7 +105,7 @@ def main(freqs):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print "Usage: %s [--start] <freq1> <freq2> ... <freqN>" % sys.argv[0]
+        print(("Usage: %s [--start] <freq1> <freq2> ... <freqN>" % sys.argv[0]))
         sys.exit(1)
 
     # Start stimulation immediately

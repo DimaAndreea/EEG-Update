@@ -12,7 +12,7 @@ except ImportError:
 if __name__ == '__main__':
 
     headset = epoc.EPOC()
-    print "Found headset with serial number: ", headset.serial_number
+    print(("Found headset with serial number: ", headset.serial_number))
 
     info = pylsl.stream_info('Emotiv EEG', 'EEG', len(headset.channel_mask),
                              headset.sampling_rate,
@@ -32,8 +32,8 @@ if __name__ == '__main__':
     while True:
         try:
             s = headset.get_sample()
-        except epoc.EPOCTurnedOffError, e:
-            print "Headset is turned off, waiting..."
+        except epoc.EPOCTurnedOffError as e:
+            print("Headset is turned off, waiting...")
             time.sleep(0.02)
         else:
             if s:

@@ -31,7 +31,7 @@ import usb.util
 
 import numpy as np
 
-import utils
+from . import utils
 
 
 class EPOCError(Exception):
@@ -176,14 +176,14 @@ class EPOC(object):
         """Custom match function for libusb."""
         try:
             manu = usb.util.get_string(device, device.iManufacturer)
-        except usb.core.USBError, usb_exception:
+        except usb.core.USBError as usb_exception:
             # If the udev rule is installed, we shouldn't get an exception
             # for Emotiv device.
-            print usb_exception
+            print(usb_exception)
             return False
         else:
             if manu and manu.startswith(self.MANUFACTURER_PREFIX):
-                print manu
+                print(manu)
                 return True
                 # FIXME: This may not be necessary at all Found a dongle, check for interface class 3
                 for interf in device.get_active_configuration():
@@ -219,7 +219,7 @@ class EPOC(object):
             self.product_id = "%x" % dev.idProduct
 
             if self.product_id == "0001":
-                print "Consumer headset detected."
+                print("Consumer headset detected.")
                 self.headset_type = "consumer"
 
             if self.method == "libusb":
@@ -250,7 +250,7 @@ class EPOC(object):
         except usb.USBError as ue:
             if ue.errno == 110:
                 self.headset_on = False
-                print "Setup is OK but make sure that headset is turned on."
+                print("Setup is OK but make sure that headset is turned on.")
         else:
             self.headset_on = True
 
@@ -261,24 +261,24 @@ class EPOC(object):
         """
         if self.headset_type == "research":
             self.decryption_key = ''.join([self.serial_number[15], '\x00',
-                                           self.serial_number[14], '\x54',
-                                           self.serial_number[13], '\x10',
-                                           self.serial_number[12], '\x42',
-                                           self.serial_number[15], '\x00',
-                                           self.serial_number[14], '\x48',
-                                           self.serial_number[13], '\x00',
-                                           self.serial_number[12], '\x50'])
+                                            self.serial_number[14], '\x54',
+                                            self.serial_number[13], '\x10',
+                                            self.serial_number[12], '\x42',
+                                            self.serial_number[15], '\x00',
+                                            self.serial_number[14], '\x48',
+                                            self.serial_number[13], '\x00',
+                                            self.serial_number[12], '\x50']).encode('latin-1')
         elif self.headset_type == "consumer":
             self.decryption_key = ''.join([self.serial_number[15], '\x00',
-                                           self.serial_number[14], '\x48',
-                                           self.serial_number[13], '\x00',
-                                           self.serial_number[12], '\x54',
-                                           self.serial_number[15], '\x10',
-                                           self.serial_number[14], '\x42',
-                                           self.serial_number[13], '\x00',
-                                           self.serial_number[12], '\x50'])
+                                            self.serial_number[14], '\x48',
+                                            self.serial_number[13], '\x00',
+                                            self.serial_number[12], '\x54',
+                                            self.serial_number[15], '\x10',
+                                            self.serial_number[14], '\x42',
+                                            self.serial_number[13], '\x00',
+                                            self.serial_number[12], '\x50']).encode('latin-1')
 
-        self._cipher = AES.new(self.decryption_key)
+        self._cipher = AES.new(self.decryption_key, AES.MODE_ECB)
 
     def set_external_decryption(self):
         """Use another process for concurrent decryption."""
@@ -297,9 +297,9 @@ class EPOC(object):
     def get_sample(self):
         """Returns an array of EEG samples."""
         try:
-            raw_data = self._cipher.decrypt(self.endpoint.read(32))
+            raw_data = self._cipher.decrypt(bytes(self.endpoint.read(32)))
             # Parse counter
-            ctr = ord(raw_data[0])
+            ctr = raw_data[0]
             # Update gyro's if requested
             if self.enable_gyro:
                 self.gyroX = ((ord(raw_data[29]) << 4) | (ord(raw_data[31]) >> 4))
@@ -351,8 +351,9 @@ class EPOC(object):
             level = 0
             for i in range(13, -1, -1):
                 level <<= 1
-                b, o = (bits[i] / 8) + 1, bits[i] % 8
-                level |= (ord(raw_data[b]) >> o) & 1
+                b, o = (bits[i] // 8) + 1, bits[i] % 8
+                level |= (raw_data[int(b)] >> o) & 1
+
             # Return level in uV (microVolts)
             return level
 
@@ -365,7 +366,9 @@ class EPOC(object):
         _buffer = np.ndarray((total_samples, len(self.channel_mask)), dtype=np.float64)
 
         # Acquire in one read, this should be more robust against drops
-        raw_data = self._cipher.decrypt(self.endpoint.read(32 * (total_samples + duration + 1), timeout=(duration+1)*1000))
+        encrypted = self.endpoint.read(32 * (total_samples + duration + 1), timeout=(duration+1)*1000)
+        raw_data = self._cipher.decrypt(bytes(encrypted))
+
 
         if stop_callback and stop_callback_param:
             stop_callback(stop_callback_param)
@@ -379,7 +382,7 @@ class EPOC(object):
             if c == total_samples:
                 break
             # Parse counter
-            ctr = ord(block[0])
+            ctr = block[0]
             # Skip battery
             if ctr < 128:
                 idx.append(ctr)
@@ -421,16 +424,16 @@ def main():
                 print("\x1b[2J\x1b[H")
                 header = "Emotiv Data Packet [%3d/128] [Loss: N/A] [Battery: %2d(%%)]" % (
                     e.counter, e.battery)
-                print "%s\n%s" % (header, '-'*len(header))
+                print(("%s\n%s" % (header, '-'*len(header))))
 
-                print "%10s: %5d" % ("Gyro(x)", e.gyroX)
-                print "%10s: %5d" % ("Gyro(y)", e.gyroY)
+                print(("%10s: %5d" % ("Gyro(x)", e.gyroX)))
+                print(("%10s: %5d" % ("Gyro(y)", e.gyroY)))
 
                 for i,channel in enumerate(e.channel_mask):
-                    print "%10s: %.2f %20s: %.2f" % (channel, data[i], "Quality", e.quality[channel])
-        except EPOCTurnedOffError, ete:
-            print ete
-        except KeyboardInterrupt, ki:
+                    print(("%10s: %.2f %20s: %.2f" % (channel, data[i], "Quality", e.quality[channel])))
+        except EPOCTurnedOffError as ete:
+            print(ete)
+        except KeyboardInterrupt as ki:
             e.disconnect()
             return 0
 
