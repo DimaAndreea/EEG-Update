@@ -1,1 +1,8 @@
 *.pyc
+venv/
+*.bak
+*.tmp
+*.swp
+*.log
+.DS_Store
+Thumbs.db
