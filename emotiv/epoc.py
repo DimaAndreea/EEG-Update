@@ -76,7 +76,7 @@ class EPOC(object):
                 "O2", "P8",  "T8",  "F8", "AF4", "FC6", "F4"]
 
     # Sampling rate: 128Hz (Internal: 2048Hz)
-    sampling_rate = 128
+    sampling_rate = 256
 
     # Vertical resolution interval (0.51uV)
     vres = 0.51

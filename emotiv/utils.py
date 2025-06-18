@@ -1,27 +1,15 @@
 # -*- coding: utf-8 -*-
 # vim:set et ts=4 sw=4:
 #
-## Copyright (C) 2012 Ozan Çağlayan <ocaglayan@gsu.edu.tr>
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
+# Copyright (C) 2012 Ozan Çağlayan
+# GPL License
 
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-## GNU General Public License for more details.
-
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-from scipy.io import savemat
+from scipy.io import savemat 
 import numpy as np
-
 import os
 import time
+import pandas as pd
+from datetime import datetime
 
 def check_packet_drops(seq_numbers):
     lost = []
@@ -40,44 +28,21 @@ def get_level(raw_data, bits):
         b, o = (bits[i] // 8) + 1, bits[i] % 8
         level |= (raw_data[int(b)] >> o) & 1
 
-    return 0.51*level
+    return 0.51 * level
 
-def save_as_matlab(_buffer, channel_mask, folder=None, prefix=None, filename=None, metadata=None):
-    """Save as matlab data with optional metadata."""
-    nr_samples = _buffer[:, 0].size
-    trial = np.zeros((1,), dtype=object)
-    trial[0] = _buffer[:, 1:].astype(np.float64).T
-    trial_time = np.zeros((1,), dtype=object)
-    trial_time[0] = np.array(list(range(nr_samples))) / 128.0
+def save_as_csv(_buffer, channel_mask, metadata=None, filename=None):
+    """
+    Save EEG data to a CSV file, with optional metadata.
+    """
+    data = _buffer # shape (samples, channels)
+    df = pd.DataFrame(data, columns=channel_mask)
 
-    # This structure can be read by fieldtrip functions directly
-    fieldtrip_data = {"fsample"     : 128.0,
-                      "label"       : np.array(channel_mask, dtype=object).reshape((len(channel_mask), 1)),
-                      "trial"       : trial,
-                      "time"        : trial_time,
-                      "sampleinfo"  : np.array([1, nr_samples])}
+    if metadata and "Initials" in metadata:
+        date_info = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+        filename = f"emotiv-{metadata['Initials']}-{date_info}.csv"
+    else:
+        date_info = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+        filename = f"emotiv-{date_info}.csv"
 
-    matlab_data = {}
-    matlab_data["data"] = fieldtrip_data
+    df.to_csv(filename, index=False)
 
-    # Inject metadata if any
-    if metadata:
-        for key, value in list(metadata.items()):
-            matlab_data[key] = value
-
-    # Put time of recording
-    date_info = time.strftime("%d-%m-%Y_%H-%M-%S")
-    matlab_data["date"] = date_info
-
-    if not filename:
-        if metadata and "Initials" in metadata:
-            filename = "emotiv-%s-%s.mat" % (metadata["Initials"], date_info)
-        else:
-            filename = "emotiv-%s.mat" % date_info
-
-    if prefix:
-        filename = "%s-%s" % (prefix, filename)
-    if folder:
-        filename = os.path.join(folder, filename)
-
-    savemat(filename, matlab_data, oned_as='row')
