@@ -28,19 +28,19 @@ def main():
     except:
         pass
 
-    # Setup headset
+    # setup headset
     headset = epoc.EPOC(enable_gyro=False)
     if channels:
         headset.set_channel_mask(channels)
 
-    # Acquire
+    # acquire
     idx, data = headset.acquire_data_fast(duration)
 
     print(("Battery: %d %%" % headset.battery))
     print("Contact qualities")
     print((headset.quality))
 
-    # Record
+    # record
     utils.save_as_csv(data, headset.channel_mask)
 
     try:
