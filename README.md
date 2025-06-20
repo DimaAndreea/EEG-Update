@@ -1,7 +1,10 @@
 # Emotiv EPOC Python Interface (Modified)
 
-**Original Author:** Ozan Çağlayan, Galatasaray University, Computer Engineering Dept.
+**Original Author:** Ozan Çağlayan, Galatasaray University, Computer Engineering Dept. 
+
 *This project is a modified version of the original 'python-emotiv' library by Ozan Çağlayan.*
+
+**Original Repository:** [https://github.com/ozancaglayan/python-emotiv](https://github.com/ozancaglayan/python-emotiv)
 
 ---
 
