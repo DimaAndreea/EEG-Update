@@ -37,7 +37,7 @@ Parts of the project are inspired by [mushu](https://github.com/venthur/mushu) a
 
 ---
 
-## My Contributions and Modifications (Andreea Dima)
+## My Contributions and Modifications 
 
 This repository extends the original `python-emotiv` project to enable real-time EEG data acquisition and Event-Related Potential (ERP) analysis for psychological experiments.
 
@@ -61,8 +61,7 @@ Key modifications and additions include:
 
 To record EEG data synchronized with stimulus presentation:
 
-1.  **Prepare Stimuli:** Ensure your stimulus images (e.g., `happy1.jpg`, `sad1.jpg`) are placed in a folder named `stimuli/` in the root directory of the project.
-2.  **Run the Acquisition Script:** Open terminal, navigate into the `examples/` directory, and execute the recording script.
+1.  **Run the Acquisition Script:** Open terminal, navigate into the `examples/` directory, and execute the recording script.
 
     **Important Note on Permissions:**
     Due to low-level USB access requirements for the Emotiv headset on Linux, the acquisition script often requires elevated privileges. Therefore, it typically needs to be run using `sudo`.
