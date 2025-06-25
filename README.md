@@ -1,29 +1,20 @@
-Emotiv EPOC Python Interface
-============================
+# Emotiv EPOC Python Interface (Modified)
 
-Unmaintained as of January 2015
--------------
+**Original Author:** Ozan Çağlayan, Galatasaray University, Computer Engineering Dept. 
 
-**Please do not e-mail me for questions about this project. I no longer develop it,
-nor test or use it on Emotiv devices. I don't work in this field anymore. Thanks!**
+*This project is a modified version of the original 'python-emotiv' library by Ozan Çağlayan.*
 
-python-emotiv is an open-source library to acquire data from Emotiv EPOC headset.
-Although Emotiv recently provided 32-bit SDK for Linux, we have chosen
-to use the reverse-engineered protocol as the code will be finally deployed
-on a Raspberry Pi or BeagleBone Black ARM box.
+**Original Repository:** [https://github.com/ozancaglayan/python-emotiv](https://github.com/ozancaglayan/python-emotiv)
 
-The library uses libusb to detect and access the dongle instead of hidapi. The
-udev rules create a /dev/emotiv\_epoc symlink in /dev tree, if you want to
-directly read from that node, pass method="direct" when you create your EPOC
-object.
+---
 
-Parts of the project are inspired from
-[mushu](https://github.com/venthur/mushu) and
-[emokit](https://github.com/openyou/emokit) which is the pioneer of the
-reverse-engineered protocol.
+## Original Project Overview
 
-Dependencies
-============
+`python-emotiv` is an open-source library initially developed to acquire data from Emotiv EPOC headset. It uses a reverse-engineered protocol (not the official Emotiv SDK) and `libusb` for dongle access, making it suitable for deployment on ARM boxes like Raspberry Pi.
+
+Parts of the project are inspired by [mushu](https://github.com/venthur/mushu) and [emokit](https://github.com/openyou/emokit).
+
+## Key Dependencies (Original)
 
 * [pyusb](http://sourceforge.net/projects/pyusb) (Version >= 1.0)
 * [pycrypto](https://www.dlitz.net/software/pycrypto)
@@ -32,39 +23,49 @@ Dependencies
 * matplotlib (For data analysis scripts under utils/)
 * BeagleBone Black GPIO (For SSVEP BCI in examples/)
 
-[labstreaminglayer](https://code.google.com/p/labstreaminglayer)
-================================================================
+---
 
-"labstreaminglayer is a system for the unified collection of measurement time series
-in research experiments and handles both the networking, time-synchronization,
-(near-) real-time access as well as optionally the centralized collection,
-viewing and disk recording of the data."
+## My Project's Dependencies
 
-python-emotiv has preliminary support in lsl/ folder to stream Emotiv EEG signals to
-labstreaminglayer nodes.
+* [pyusb](https://pypi.org/project/pyusb/) 
+* [pycrypto](https://pypi.org/project/pycryptodome/) 
+* [numpy](https://numpy.org/) 
+* [pandas](https://pandas.pydata.org/) 
+* [pygame](https://www.pygame.org/news) 
+* [mne](https://mne.tools/stable/index.html) 
+* [matplotlib](https://matplotlib.org/)
 
-Saving your data
-================
+---
 
-utils.py contains a save_as_matlab() function to export the acquired signals
-as a MATLAB file. This function saves the EEG data according to the
-[FieldTrip](http://fieldtrip.fcdonders.nl)
-specification to ease the process of analysing signals with FieldTrip.
+## My Contributions and Modifications 
 
-Installation
-============
+This repository extends the original `python-emotiv` project to enable real-time EEG data acquisition and Event-Related Potential (ERP) analysis for psychological experiments.
 
-Just run ```python setup.py install``` to install the module on your system.
+Key modifications and additions include:
 
-Testing
-=======
+1.  **Python 2 to Python 3 Migration:**
+    * The original codebase was updated from Python 2 to Python 3 using the `2to3` tool, ensuring compatibility with modern environments.
+  
+2.  **CSV Data Export:**
+    * Changed the data export format from `.mat` (MATLAB) to `.csv` files for both EEG signals and triggers. This facilitates easier integration with standard Python analytical        tools like Pandas and MNE-Python.
+  
+      
+3.  **Synchronized Stimulus Presentation and Trigger Recording:**
+    * Implemented visual stimulus presentation using `pygame` (e.g., happy/sad images).
+    * Developed a triggering system that records stimulus type (e.g., `+1` for happy, `-1` for sad) and precise timestamps alongside EEG data.
+    * Utilized Python `threading` to enable simultaneous recording of EEG and stimulus presentation.
 
-When you run emotiv/epoc.py as a standalone application, it will dump sensor data
-to the terminal:
 
-![Terminal screenshot](https://raw.github.com/ozancaglayan/python-emotiv/master/doc/sc_console.png)
+---
+### Recording Data
 
-Authors
-=======
+To record EEG data synchronized with stimulus presentation:
 
-Ozan Çağlayan, Galatasaray University, Computer Engineering Dept.
+1.  **Run the Acquisition Script:** Open terminal, navigate into the `examples/` directory, and execute the recording script.
+
+    **Important Note on Permissions:**
+    Due to low-level USB access requirements for the Emotiv headset on Linux, the acquisition script often requires elevated privileges. Therefore, it typically needs to be run using `sudo`.
+    
+
+4.  **Output Files:** After the recording duration ends, two `.csv` files will be saved in the `results/` directory.
+
