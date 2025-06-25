@@ -65,15 +65,17 @@ def record_triggers(trigger_file_path, stimuli_images):
         writer.writerow(['Stimulus', 'Trigger Type', 'Timestamp'])
 
         start_time_triggers = time.time()
+        total_run_time = duration  
 
-        for i in range(duration): 
-            if stop_flag: # allow early exit if EEG thread finishes first
+        while (time.time() - start_time_triggers) < total_run_time:
+            if stop_flag:  # allow early exit if EEG thread finishes first
                 break
 
+            # randomly select a stimulus from the list
             stimulus = random.choice(list(loaded_stimuli.keys()))
             image_to_display = loaded_stimuli[stimulus]
 
-            # clear screen
+            # clear the screen
             screen.fill((0, 0, 0)) 
 
             # center the image
@@ -88,15 +90,21 @@ def record_triggers(trigger_file_path, stimuli_images):
             writer.writerow([stimulus, trigger_type, timestamp])
             print(f"[TRIGGER] {stimulus} @ {timestamp:.4f}")
 
-            # keep the stimulus on screen for a specific duration 
+            # keep the image on the screen for a specific duration 
             time.sleep(0.5)
 
-            screen.fill((0, 0, 0)) # clear for next stimulus or blank period
+            # blank screen between stimuli (pause)
+            screen.fill((0, 0, 0)) 
             pygame.display.flip()
-            time.sleep(0.5) # blank screen for 0.5 seconds, totaling 1 second per trial
+
+            # pause duration between stimuli 
+            blank_duration = random.uniform(0.5, 2.0)
+            time.sleep(blank_duration)
 
     print("[TRIGGERS] Stimuli display stopped.")
-    pygame.quit() 
+    pygame.quit()
+
+
 
 def main():
     global stop_flag
